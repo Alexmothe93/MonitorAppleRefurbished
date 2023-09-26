@@ -1,0 +1,16 @@
+# Copy or rename this file without the .dist extension
+
+# URL of the Apple website
+URL = "https://www.apple.com/fr/shop/refurbished/mac"
+
+# Max price wanted
+maxTargetPrice = 1500
+
+# Time in seconds between each check (900 seconds = 15 minutes)
+timeCheckInterval = 900
+
+# URL of your Discord Webhook
+discordWebhookURL = "https://discord.com/api/webhooks/123456789/someRandomCharacters"
+
+discordUsername = "Apple refurbished price alert"
+discordAvatarURL = "https://upload.wikimedia.org/wikipedia/commons/a/ab/Apple-logo.png"
