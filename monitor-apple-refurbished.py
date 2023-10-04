@@ -58,7 +58,7 @@ while True:
         for product in alertedProducts:
             if not product.stillAvailable:
                 sendDiscordMessage(product.title+" à "+product.price+" n'est plus disponible.")
-                alertedProducts.remove(alertedProducts.index(product))
+                alertedProducts.remove(product)
 
     except Exception as err:
         sendDiscordMessage(f"Unexpected {err=}, {type(err)=}")
