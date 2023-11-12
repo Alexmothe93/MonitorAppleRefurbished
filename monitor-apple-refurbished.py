@@ -40,25 +40,33 @@ while True:
             wait()
             continue
         
-        refurbishedProducts = json.loads(re.findall(r'REFURB_GRID_BOOTSTRAP = (\{.+\});', r.text)[0])["tiles"]
-    
-        for product in alertedProducts:
-            product.stillAvailable = False
+        refurbGridBootstraps = re.findall(r'REFURB_GRID_BOOTSTRAP = (\{.+\});', r.text)
 
-        for product in refurbishedProducts:
-            if float(product["price"]["currentPrice"]["raw_amount"]) <= maxTargetPrice:
-                targetedProduct = Product(product["title"], product["partNumber"], product["price"]["currentPrice"]["amount"])
-                if targetedProduct in alertedProducts:
-                    alertedProducts[alertedProducts.index(targetedProduct)].stillAvailable = True
-                else:
-                    sendDiscordMessage(targetedProduct.price+" : "+targetedProduct.title+"\nhttps://www.apple.com"+product["productDetailsUrl"])
-                    targetedProduct.stillAvailable = True
-                    alertedProducts.append(targetedProduct)
+        if refurbGridBootstraps:
+            refurbishedProducts = json.loads(refurbGridBootstraps[0])["tiles"]
+        else:
+            sendDiscordMessage("Error: REFURB_GRID_BOOTSTRAP content not found.")
+            wait()
+            continue
 
-        for product in alertedProducts:
-            if not product.stillAvailable:
-                sendDiscordMessage(product.title+" à "+product.price+" n'est plus disponible.")
-                alertedProducts.remove(product)
+        if refurbishedProducts:
+            for product in alertedProducts:
+                product.stillAvailable = False
+
+            for product in refurbishedProducts:
+                if float(product["price"]["currentPrice"]["raw_amount"]) <= maxTargetPrice:
+                    targetedProduct = Product(product["title"], product["partNumber"], product["price"]["currentPrice"]["amount"])
+                    if targetedProduct in alertedProducts:
+                        alertedProducts[alertedProducts.index(targetedProduct)].stillAvailable = True
+                    else:
+                        sendDiscordMessage(targetedProduct.price+" : "+targetedProduct.title+"\nhttps://www.apple.com"+product["productDetailsUrl"])
+                        targetedProduct.stillAvailable = True
+                        alertedProducts.append(targetedProduct)
+
+            for product in alertedProducts:
+                if not product.stillAvailable:
+                    sendDiscordMessage(product.title+" à "+product.price+" n'est plus disponible.")
+                    alertedProducts.remove(product)
 
     except Exception as err:
         sendDiscordMessage(f"Unexpected {err=}, {type(err)=}")
