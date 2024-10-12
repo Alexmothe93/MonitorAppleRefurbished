@@ -29,6 +29,10 @@ def sendDiscordMessage(message):
 def wait():
     time.sleep(timeCheckInterval)
 
+def withoutHTML(text):
+    clean = re.compile('<.*>')
+    return re.sub(clean, '', text)
+
 alertedProducts: [Product] = []
 
 while True:
@@ -56,6 +60,7 @@ while True:
             for product in refurbishedProducts:
                 if float(product["price"]["currentPrice"]["raw_amount"]) <= maxTargetPrice:
                     targetedProduct = Product(product["title"], product["partNumber"], product["price"]["currentPrice"]["amount"])
+                    targetedProduct = Product(product["title"], product["partNumber"], withoutHTML(product["price"]["currentPrice"]["amount"]))
                     if targetedProduct in alertedProducts:
                         alertedProducts[alertedProducts.index(targetedProduct)].stillAvailable = True
                     else:
