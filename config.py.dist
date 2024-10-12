@@ -6,6 +6,18 @@ URL = "https://www.apple.com/fr/shop/refurbished/mac"
 # Max price wanted
 maxTargetPrice = 1500
 
+# Min amount of RAM wanted (in GB)
+minRAM = 0
+
+# Min amount of storage wanted (in GB, 1TB = 1024, 2TB = 2048, 4TB = 4096, 8TB = 8192)
+minStorageGB = 0
+
+# Min release year wanted
+minYear = 2013
+
+# List of wanted products
+wantedProducts = ["macbookair", "macbookpro", "imac", "macmini", "macstudio", "macpro", "display"]
+
 # Time in seconds between each check (900 seconds = 15 minutes)
 timeCheckInterval = 900
 

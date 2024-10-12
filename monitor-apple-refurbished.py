@@ -14,6 +14,39 @@ class Product:
     price: str
     stillAvailable: bool = False
 
+def convertedCapacityOf(capacity):
+    if "gb" in capacity:
+        return int(capacity.removesuffix("gb"))
+    elif "tb" in capacity:
+        return int(capacity.removesuffix("tb")) * 1024
+    else:
+        sendDiscordMessage("Error trying to convert "+capacity+" into number.")
+
+def meetsTheCriteria(product):
+    if "raw_amount" in product["price"]["currentPrice"] and "dimensions" in product["filters"]:
+        rawAmount = float(product["price"]["currentPrice"]["raw_amount"])
+        filtersDimensions = product["filters"]["dimensions"]
+    else:
+        sendDiscordMessage("Failed to retrieve specifications.")
+        return False
+    
+    if  rawAmount > maxTargetPrice:
+        return False
+    
+    if "dimensionCapacity" in filtersDimensions and convertedCapacityOf(filtersDimensions["dimensionCapacity"]) < minStorageGB:
+        return False
+
+    if "tsMemorySize" in filtersDimensions and convertedCapacityOf(filtersDimensions["tsMemorySize"]) < minRAM:
+        return False
+
+    if "dimensionRelYear" in filtersDimensions and int(filtersDimensions["dimensionRelYear"]) < minYear:
+        return False
+
+    if "refurbClearModel" in filtersDimensions and filtersDimensions["refurbClearModel"] not in wantedProducts:
+        return False
+
+    return True
+
 def sendDiscordMessage(message):
     print(message)
     data = {
@@ -58,8 +91,7 @@ while True:
                 product.stillAvailable = False
 
             for product in refurbishedProducts:
-                if float(product["price"]["currentPrice"]["raw_amount"]) <= maxTargetPrice:
-                    targetedProduct = Product(product["title"], product["partNumber"], product["price"]["currentPrice"]["amount"])
+                if meetsTheCriteria(product):
                     targetedProduct = Product(product["title"], product["partNumber"], withoutHTML(product["price"]["currentPrice"]["amount"]))
                     if targetedProduct in alertedProducts:
                         alertedProducts[alertedProducts.index(targetedProduct)].stillAvailable = True
