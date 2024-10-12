@@ -72,7 +72,15 @@ while True:
     try:
         r = requests.get(URL)
         
-        if r.status_code != 200:
+        if r.status_code == 500:
+            sendDiscordMessage("Error 500 getting the web page: "+URL)
+            wait()
+            continue
+        elif r.status_code == 503:
+            print("Error 503 getting the web page, Apple Store is unavailable.")
+            wait()
+            continue
+        elif r.status_code != 200:
             sendDiscordMessage("Error "+str(r.status_code)+" getting the web page.")
             wait()
             continue
